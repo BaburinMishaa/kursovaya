@@ -8,21 +8,16 @@
         ResizeMode="NoResize">
 
     <Grid>
-        <!-- Заголовок -->
         <TextBlock Text="Вход" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0"/>
 
-        <!-- Поле для логина -->
         <TextBlock Text="Логин:" FontSize="12" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,80,0,0"/>
         <TextBox x:Name="LoginTextBox" Width="180" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,110,0,0" Background="White"/>
 
-        <!-- Поле для пароля -->
         <TextBlock Text="Пароль:" FontSize="12" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,150,0,0"/>
         <PasswordBox x:Name="PasswordBox" Width="180" Height="30" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="30,180,0,0" Background="White"/>
 
-        <!-- Кнопка "Войти" -->
-        <Button Content="Войти" Width="98" Height="26" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,230,0,0" Background="Black" Foreground="White" FontSize="12" FontWeight="Bold"/>
+        <Button Content="Войти" Width="98" Height="26" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,230,0,0" Background="Black" Foreground="White" FontSize="12" FontWeight="Bold" Click="OnLoginButtonClick"/>
 
-        <!-- Кнопка "Регистрация" -->
         <Button Content="Регистрация" Width="99" Height="27" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,271,0,0" Background="Black" Foreground="White" FontSize="12" FontWeight="Bold" Click="OnRegistrationButtonClick"/>
     </Grid>
 </Window>

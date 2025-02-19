@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient; // Добавлено для SqlConnection
+using System.Data.SqlClient; // Для работы с SQL Server
 using System.Text.RegularExpressions;
 using System.Windows;
 
@@ -15,48 +15,36 @@ namespace Kursovaya
         // Обработчик для кнопки "Зарегистрироваться"
         private void OnRegisterButtonClick(object sender, RoutedEventArgs e)
         {
-            string fullName = FullNameTextBox.Text;
+            string fullName = FullNameTextBox.Text;  // Получаем ФИО логин пароль паспорт данные
             string login = LoginTextBox.Text;
             string password = PasswordBox.Password;
             string passportDetails = PassportTextBox.Text;
 
             // Проверка на пустые поля
-            if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(passportDetails))
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password))
             {
-                MessageBox.Show("Все поля должны быть заполнены!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Логин и пароль не могут быть пустыми!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            // Разделяем ФИО на части (например, по пробелу)
+            // Разделяем ФИО на части (фамилия, имя, отчество)
             string[] nameParts = fullName.Split(' ');
             if (nameParts.Length < 2)
             {
-                MessageBox.Show("Введите полное ФИО (имя и отчество).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Введите полное ФИО (фамилия, имя, отчество).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            string firstName = nameParts[0];  // Имя
-            string lastName = nameParts[1];   // Отчество
-
-            // Простейшая проверка на уникальность логина
-            if (login == "admin")
-            {
-                MessageBox.Show("Этот логин уже занят. Выберите другой.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            // Дополнительные проверки пароля
-            if (password.Length < 6)
-            {
-                MessageBox.Show("Пароль должен быть не менее 6 символов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            string surname = nameParts[0];  // Фамилия
+            string firstName = nameParts[1]; // Имя
+            string lastName = nameParts.Length > 2 ? nameParts[2] : ""; // Отчество (если есть)
 
             // Строка подключения к базе данных
             string connectionString = "Server=192.168.10.200;Database=baburin_practice;User Id=student;Password=PassWord123!";
 
-            // SQL запрос для добавления пользователя в базу данных
-            string query = "INSERT INTO Clients (name, surname, passport_details) VALUES (@Name, @Surname, @PassportDetails)";
+            // SQL запрос для добавления данных
+            string query = "INSERT INTO Clients (surname, name, lastname, passport_details, login, password) " +
+                          "VALUES (@Surname, @Name, @Lastname, @PassportDetails, @Login, @Password)";
 
             try
             {
@@ -64,9 +52,12 @@ namespace Kursovaya
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Surname", surname);
                     command.Parameters.AddWithValue("@Name", firstName);
-                    command.Parameters.AddWithValue("@Surname", lastName);
+                    command.Parameters.AddWithValue("@Lastname", lastName);
                     command.Parameters.AddWithValue("@PassportDetails", passportDetails);
+                    command.Parameters.AddWithValue("@Login", login);
+                    command.Parameters.AddWithValue("@Password", password);
 
                     connection.Open();
                     command.ExecuteNonQuery(); // Выполнение запроса
@@ -75,10 +66,10 @@ namespace Kursovaya
 
                 MessageBox.Show("Регистрация успешна!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Закрываем окно регистрации и открываем окно входа
+                // Открываем окно входа или другое действие
                 LoginWindow loginWindow = new LoginWindow();
-                loginWindow.Show(); // Показываем окно входа
-                this.Close(); // Закрываем окно регистрации
+                loginWindow.Show();
+                this.Close();  // Закрыть окно регистрации
             }
             catch (Exception ex)
             {
@@ -93,8 +84,6 @@ namespace Kursovaya
             loginWindow.Show();
             this.Close();
         }
-
-        // Обработчик для события TextChanged поля PassportTextBox
         private void PassportTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             string passportValue = PassportTextBox.Text;
